@@ -25,15 +25,19 @@ export function TaskFilters({filter, search, sortMode, onFilter, onSearch, onSor
   const advancedCount = Number(categoryFilter !== 'all') + Number(sortMode !== 'dueDate');
   return (
     <View style={styles.wrapper}>
-      <View style={styles.searchBox}><MaterialDesignIcons name="magnify" size={22} color={colors.textMuted} /><TextInput value={search} onChangeText={onSearch} placeholder="Tìm theo tên công việc" placeholderTextColor={colors.textMuted} style={[styles.search, preferences.largeText && styles.largeSearch]} accessibilityLabel="Tìm kiếm công việc" /></View>
+      <View style={styles.searchRow}>
+        <View style={styles.searchBox}>
+          <View style={styles.indicator} accessibilityLiveRegion="polite" accessibilityLabel={saving ? 'Đang lưu' : filtering ? 'Đang cập nhật' : undefined} accessibilityState={{busy: filtering || saving}}>{filtering || saving ? <ActivityIndicator size="small" color={colors.primary} /> : <MaterialDesignIcons name="magnify" size={20} color={colors.textMuted} />}</View>
+          <TextInput value={search} onChangeText={onSearch} placeholder="Tìm công việc" placeholderTextColor={colors.textMuted} style={[styles.search, preferences.largeText && styles.largeSearch]} accessibilityLabel="Tìm kiếm công việc" />
+        </View>
+        <Pressable onPress={() => setExpanded(current => !current)} accessibilityRole="button" accessibilityLabel={`Danh mục và sắp xếp${advancedCount ? `, ${advancedCount} tuỳ chọn đang áp dụng` : ''}`} accessibilityState={{expanded}} style={({pressed}) => [styles.toggle, (expanded || advancedCount > 0) && styles.sortSelected, pressed && styles.pressed]}>
+          <MaterialDesignIcons name="tune-variant" size={22} color={colors.text} />
+          {advancedCount > 0 && <AppText style={styles.filterText}>{advancedCount}</AppText>}
+        </Pressable>
+      </View>
       <View style={styles.filterRow}>
         {filters.map(item => <Pressable key={item.key} onPress={() => onFilter(item.key)} style={({pressed}) => [styles.filterButton, filter === item.key && styles.filterSelected, pressed && styles.pressed]} accessibilityRole="button" accessibilityState={{selected: filter === item.key}}><AppText style={[styles.filterText, filter === item.key && styles.filterTextSelected]}>{item.label}</AppText></Pressable>)}
       </View>
-      <Pressable onPress={() => setExpanded(current => !current)} accessibilityRole="button" accessibilityState={{expanded}} style={({pressed}) => [styles.toggle, pressed && styles.pressed]}>
-        <MaterialDesignIcons name="tune-variant" size={20} color={colors.text} />
-        <AppText style={styles.toggleText}>Danh mục & sắp xếp{advancedCount ? ` (${advancedCount})` : ''}</AppText>
-        <MaterialDesignIcons name={expanded ? 'chevron-up' : 'chevron-down'} size={20} color={colors.text} />
-      </Pressable>
       {expanded && <View style={styles.advanced}>
       <AppText variant="caption">Danh mục</AppText>
       <View style={styles.categoryRow}>
@@ -49,24 +53,20 @@ export function TaskFilters({filter, search, sortMode, onFilter, onSearch, onSor
         <Pressable accessibilityRole="button" accessibilityState={{selected: sortMode === 'priority'}} onPress={() => onSort('priority')} style={({pressed}) => [styles.sortButton, sortMode === 'priority' && styles.sortSelected, pressed && styles.pressed]}><MaterialDesignIcons name="flag-outline" size={16} color={colors.textMuted} /><AppText style={styles.sortText}>Ưu tiên</AppText></Pressable>
       </View>
       </View>}
-      <View style={styles.feedback} accessibilityLiveRegion="polite" accessibilityState={{busy: filtering || saving}}>
-        {(filtering || saving) && <ActivityIndicator size="small" color={colors.primary} />}
-        <AppText variant="caption">{saving ? 'Đang lưu…' : filtering ? 'Đang cập nhật…' : `${categoryFilter === 'all' ? 'Mọi danh mục' : categoryFilter} · ${sortMode === 'dueDate' ? 'Hạn gần nhất' : 'Ưu tiên'}`}</AppText>
-      </View>
     </View>
   );
 }
 
 const createStyles = (colors: ReturnType<typeof usePreferences>['colors']) => StyleSheet.create({
   wrapper: {gap: spacing.sm},
-  toggle: {minHeight: 48, paddingVertical: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
-  toggleText: {flex: 1, fontWeight: '700'},
+  searchRow: {flexDirection: 'row', alignItems: 'stretch', gap: spacing.sm},
+  indicator: {width: 22, alignItems: 'center', justifyContent: 'center'},
+  toggle: {minWidth: 48, minHeight: 48, paddingHorizontal: spacing.sm, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: spacing.xs, borderWidth: 1, borderColor: colors.border, borderRadius: radii.sm, backgroundColor: colors.surface},
   advanced: {padding: spacing.md, borderWidth: 1, borderColor: colors.border, borderRadius: radii.sm, gap: spacing.md},
   largeSearch: {fontSize: 19, minHeight: 56},
   categoryRow: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
   categoryButton: {minHeight: 48, paddingHorizontal: spacing.sm, justifyContent: 'center', borderRadius: radii.sm, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface},
-  feedback: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 28},
-  searchBox: {minHeight: 48, paddingHorizontal: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, borderRadius: radii.sm, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface},
+  searchBox: {flex: 1, minWidth: 0, minHeight: 48, paddingHorizontal: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, borderRadius: radii.sm, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface},
   search: {flex: 1, minWidth: 0, minHeight: 48, paddingVertical: spacing.sm, color: colors.text, fontSize: 16},
   filterRow: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
   filterButton: {minHeight: 48, paddingHorizontal: spacing.sm, paddingVertical: spacing.sm, justifyContent: 'center', borderRadius: radii.sm, backgroundColor: colors.muted},

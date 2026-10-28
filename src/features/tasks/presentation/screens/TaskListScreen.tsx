@@ -47,10 +47,10 @@ export function TaskListScreen({navigation}: Props) {
           </View>
           <TaskFilters filter={filter} search={search} sortMode={sortMode} onFilter={setFilter} onSearch={setSearch} onSort={setSortMode} />
           <View style={styles.sectionRow}>
-            <View style={styles.resultCopy} accessibilityLiveRegion="polite"><AppText style={styles.sectionTitle}>{hasFilters ? 'Kết quả lọc' : 'Tất cả công việc'}</AppText><AppText variant="caption">{visibleTasks.length}/{tasks.length} công việc{categoryFilter !== 'all' ? ` · ${categoryFilter}` : ''}</AppText></View>
-            {hasFilters && <Pressable onPress={resetFilters} accessibilityRole="button" style={({pressed}) => [styles.resetButton, pressed && styles.pressed]}><AppText>Xoá bộ lọc</AppText></Pressable>}
+            <View style={styles.resultCopy} accessibilityLiveRegion="polite"><AppText style={styles.sectionTitle}>{hasFilters ? 'Kết quả' : 'Công việc'} · {visibleTasks.length}/{tasks.length}</AppText></View>
+            {hasFilters && <Pressable onPress={resetFilters} accessibilityRole="button" accessibilityLabel="Xoá bộ lọc" style={({pressed}) => [styles.smallAction, pressed && styles.pressed]}><MaterialDesignIcons name="filter-remove-outline" size={22} color={colors.text} /></Pressable>}
+            <Pressable disabled={completedCount === 0 || saving} onPress={confirmDeleteCompleted} accessibilityRole="button" accessibilityLabel={`Xoá ${completedCount} việc đã hoàn thành`} accessibilityState={{disabled: completedCount === 0 || saving}} style={({pressed}) => [styles.smallAction, (completedCount === 0 || saving) && styles.disabled, pressed && styles.pressed]}><MaterialDesignIcons name="trash-can-outline" size={21} color={colors.danger} /><AppText style={styles.deleteLink}>{completedCount}</AppText></Pressable>
           </View>
-          <Pressable disabled={completedCount === 0 || saving} onPress={confirmDeleteCompleted} accessibilityRole="button" accessibilityState={{disabled: completedCount === 0 || saving}} style={({pressed}) => [styles.deleteButton, pressed && styles.pressed]}><AppText style={[styles.deleteLink, (completedCount === 0 || saving) && styles.disabled]}>Xoá việc đã hoàn thành ({completedCount})</AppText></Pressable>
         </View>}
         renderItem={({item}) => <TaskCard task={item} onPress={() => navigation.navigate('TaskDetail', {taskId: item.id})} onToggle={() => toggleTask(item.id)} onLongPress={() => confirmDelete(item.id, item.title)} />}
         ItemSeparatorComponent={TaskSeparator}
@@ -83,9 +83,9 @@ const createStyles = (colors: ReturnType<typeof usePreferences>['colors']) => St
   track: {height: 8, overflow: 'hidden', borderRadius: radii.pill, backgroundColor: '#4B5563'},
   progress: {height: '100%', borderRadius: radii.pill, backgroundColor: colors.secondary},
   sectionRow: {flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},
-  resultCopy: {flexGrow: 1, flexBasis: 160, gap: spacing.xs},
+  resultCopy: {flexGrow: 1, flexBasis: 140},
+  smallAction: {minHeight: 48, minWidth: 48, paddingHorizontal: spacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
   resetButton: {minHeight: 48, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, justifyContent: 'center', borderRadius: radii.sm, borderWidth: 1, borderColor: colors.border},
-  deleteButton: {minHeight: 48, justifyContent: 'center', alignSelf: 'flex-start', paddingVertical: spacing.sm},
   sectionTitle: {fontSize: 18, fontWeight: '700'},
   deleteLink: {color: colors.danger, fontSize: 12, fontWeight: '700'},
   disabled: {color: colors.textMuted, opacity: 0.5},
