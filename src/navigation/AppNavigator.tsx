@@ -11,6 +11,9 @@ import {TaskListScreen} from '../features/tasks/presentation/screens/TaskListScr
 import {StatsScreen} from '../features/stats/presentation/screens/StatsScreen';
 import {SettingsScreen} from '../features/settings/presentation/screens/SettingsScreen';
 import {usePreferences} from '../core/theme/Preferences';
+import type {NavigatorScreenParams} from '@react-navigation/native';
+import {NotiListScreen} from '../features/reminders/NotiListScreen';
+import {useReminders} from '../features/reminders/RemindersProvider';
 
 enableScreens();
 
@@ -20,7 +23,8 @@ export type RootStackParamList = {
   TaskDetail: {taskId: string};
 };
 export type BottomTabParamList = {
-  Tasks: undefined;
+  Tasks: NavigatorScreenParams<RootStackParamList> | undefined;
+  NotiList: undefined;
   Stats: undefined;
   Settings: undefined;
 };
@@ -29,7 +33,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator<BottomTabParamList>();
 
 function getTabIcon(routeName: keyof BottomTabParamList, color: string, size: number) {
-  const icon = routeName === 'Tasks' ? 'format-list-checks' : routeName === 'Stats' ? 'chart-box-outline' : 'cog-outline';
+  const icon = routeName === 'Tasks' ? 'format-list-checks' : routeName === 'Stats' ? 'chart-box-outline' : routeName === 'NotiList' ? 'bell-outline' : 'cog-outline';
   return <MaterialDesignIcons name={icon} size={size} color={color} />;
 }
 
@@ -45,6 +49,7 @@ function TaskStack() {
 
 export function AppNavigator() {
   const {colors} = usePreferences();
+  const {unreadCount} = useReminders();
   return (
     <NavigationContainer>
       <Tabs.Navigator
@@ -58,6 +63,7 @@ export function AppNavigator() {
         })}>
         <Tabs.Screen name="Tasks" component={TaskStack} options={{title: 'Công việc'}} />
         <Tabs.Screen name="Stats" component={StatsScreen} options={{title: 'Thống kê'}} />
+        <Tabs.Screen name="NotiList" component={NotiListScreen} options={{title: 'Thông báo', tabBarBadge: unreadCount || undefined}} />
         <Tabs.Screen name="Settings" component={SettingsScreen} options={{title: 'Cài đặt'}} />
       </Tabs.Navigator>
     </NavigationContainer>

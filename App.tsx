@@ -4,6 +4,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {AppNavigator} from './src/navigation/AppNavigator';
 import {TasksProvider} from './src/features/tasks/presentation/hooks/useTasks';
+import {RemindersProvider} from './src/features/reminders/RemindersProvider';
 import {NotificationsProvider, NotificationModal} from './src/shared/components/Notifications';
 
 function AppContent() {
@@ -13,7 +14,7 @@ function AppContent() {
     <SafeAreaProvider>
       <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
       <TasksProvider>
-        <AppNavigator />
+        <RemindersProvider><AppNavigator /></RemindersProvider>
       </TasksProvider>
       <NotificationModal />
     </SafeAreaProvider>
