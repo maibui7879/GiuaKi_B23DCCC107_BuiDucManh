@@ -1,45 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import {StatusBar} from 'react-native';
+import {PreferencesProvider, usePreferences} from './src/core/theme/Preferences';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import {AppNavigator} from './src/navigation/AppNavigator';
+import {TasksProvider} from './src/features/tasks/presentation/hooks/useTasks';
+import {NotificationsProvider, NotificationModal} from './src/shared/components/Notifications';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+function AppContent() {
+  const {dark} = usePreferences();
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
+      <TasksProvider>
+        <AppNavigator />
+      </TasksProvider>
+      <NotificationModal />
     </SafeAreaProvider>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
+function App() {
+  return <NotificationsProvider><PreferencesProvider><AppContent /></PreferencesProvider></NotificationsProvider>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
